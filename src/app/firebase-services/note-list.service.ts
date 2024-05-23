@@ -29,12 +29,31 @@ export class NoteListService {
     this.unsubTrash = this.subTrashList();
   }
 
-  async updateNote(colId: string, docId: string, item: {}){ // es wird nicht der komplete dokument überchrieben nur die positionen welche sich in item befinden
-    await updateDoc(this.getSingleDocRef(colId, docId), item).catch(
-      (err) => {console.log(err);
-      }
-    ).then();
-   
+  async updateNote(note: Note) {
+    // es wird nicht der komplete dokument überchrieben nur die positionen welche sich in item befinden
+    if (note.id) {
+      let docRef = this.getSingleDocRef(this.getColIdFromNote(note), note.id);
+      await updateDoc(docRef, this.getCleanJson(note)).catch((err) => {
+        console.log(err);
+      });
+    }
+  }
+
+  getCleanJson(note: Note) {
+    return {
+      type: note.type,
+      title: note.title,
+      content: note.content,
+      marked: note.marked,
+    };
+  }
+
+  getColIdFromNote(note: Note) {
+    if (note.type == 'note') {
+      return 'notes';
+    } else {
+      return 'trash';
+    }
   }
 
   async addNote(item: Note) {
