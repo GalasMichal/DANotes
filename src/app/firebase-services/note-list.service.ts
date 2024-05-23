@@ -6,6 +6,8 @@ import {
   doc,
   collectionData,
   onSnapshot,
+  addDoc,
+  updateDoc,
 } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 
@@ -25,6 +27,24 @@ export class NoteListService {
   constructor() {
     this.unsubNotes = this.subNotesList();
     this.unsubTrash = this.subTrashList();
+  }
+
+  async updateNote(colId: string, docId: string, item: {}){ // es wird nicht der komplete dokument überchrieben nur die positionen welche sich in item befinden
+    await updateDoc(this.getSingleDocRef(colId, docId), item).catch(
+      (err) => {console.log(err);
+      }
+    ).then();
+   
+  }
+
+  async addNote(item: Note) {
+    await addDoc(this.getNotesRef(), item)
+      .catch((err) => {
+        console.error(err);
+      })
+      .then((docRef) => {
+        console.log('Document written with ID: ', docRef?.id);
+      });
   }
 
   //   // eine von lösungen zum echzeitdata abzurufen
