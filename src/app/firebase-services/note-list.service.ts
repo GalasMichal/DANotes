@@ -8,6 +8,7 @@ import {
   onSnapshot,
   addDoc,
   updateDoc,
+  deleteDoc,
 } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 
@@ -27,6 +28,12 @@ export class NoteListService {
   constructor() {
     this.unsubNotes = this.subNotesList();
     this.unsubTrash = this.subTrashList();
+  }
+
+  async deleteNote(colId: 'notes' | 'trash', docId: string) {
+    await deleteDoc(this.getSingleDocRef(colId, docId)).catch((err) => {
+      console.log(err);
+    });
   }
 
   async updateNote(note: Note) {
@@ -56,8 +63,8 @@ export class NoteListService {
     }
   }
 
-  async addNote(item: Note) {
-    await addDoc(this.getNotesRef(), item)
+  async addNote(item: Note, colId: 'notes' | 'trash') {
+    await addDoc(this.getNotesRef(colId), item)
       .catch((err) => {
         console.error(err);
       })
@@ -86,7 +93,7 @@ export class NoteListService {
   }
 
   subNotesList() {
-    return onSnapshot(this.getNotesRef(), (list) => {
+    return onSnapshot(this.getNotesRef('note'), (list) => {
       this.normalNotes = [];
       list.forEach((element) => {
         this.normalNotes.push(this.setNoteObject(element.data(), element.id));
@@ -112,8 +119,8 @@ export class NoteListService {
     this.unsubNotes();
   }
 
-  getNotesRef() {
-    return collection(this.firestore, 'notes'); // collection ist die sammlung auf firebase
+  getNotesRef(colId: string) {
+    return collection(this.firestore, colId); // collection ist die sammlung auf firebase
   }
 
   getTrashRef() {
@@ -123,4 +130,4 @@ export class NoteListService {
   getSingleDocRef(colId: string, docId: string) {
     return doc(collection(this.firestore, colId), docId);
   } // doc ist die untere ebene von collections also unterordner
-}
+} for

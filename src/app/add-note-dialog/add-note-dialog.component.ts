@@ -27,7 +27,7 @@ export class AddNoteDialogComponent {
       content: this.description,
       marked: false,
     };
-    this.noteService.addNote(note)  //hier wird das Noteservice importiert
+    this.noteService.addNote(note, 'notes')  //hier wird das Noteservice importiert
     //beachte das closeDialog() zum Schluss kommt, denn es leert die Variablen
     this.closeDialog();
   }
